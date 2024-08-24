@@ -1,0 +1,40 @@
+﻿@{
+    ViewData["Title"] = "Отправить сообщение";
+}
+
+<div class="container">
+    <h4>Отправить сообщение</h4>
+    <div class="col-xl-4 col-lg-6 col-12">
+        <form method="post">
+            <div class="form-group">
+                <label for="message"></label>
+                <input name="message" class="form-control"/>
+            </div>
+            <button type="submit" class="btn btn-primary mt-4">Отправить</button>
+        </form>
+    </div>
+</div>
+
+@section Scripts
+{
+    <script>
+        $('form').on('submit', function (event) {
+            event.preventDefault();
+            var message = $("input[name='message']").val();
+
+            $.ajax({
+                type: 'POST',
+                url: '@Url.Action("Send", "Producer")',
+                data: JSON.stringify(message),
+                contentType: 'application/json',
+                success: function (data) {
+                    console.log(data);
+                    window.alert("Письмо доставлено");
+                },
+                error: function (xhr, status, error) {
+                    console.log(error);
+                }
+            });
+        });
+    </script>
+}

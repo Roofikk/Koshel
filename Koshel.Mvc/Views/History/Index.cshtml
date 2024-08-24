@@ -1,0 +1,20 @@
+﻿@model IEnumerable<MessageModel>
+
+@{
+    ViewData["Title"] = "История";
+}
+
+<h4>История сообщений за последние 10 минут</h4>
+
+<div class="container">
+    <div class="row">
+        @foreach (var message in Model)
+        {
+            <div class="d-flex gap-3">
+                <p>@message.MessageId</p>
+                <p>@message.Content</p>
+                <p>@message.SendDate.ToString("dd.MM.yyyy HH:mm")</p>
+            </div>
+        }
+    </div>
+</div>
