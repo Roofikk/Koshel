@@ -1,0 +1,44 @@
+services:
+  postgresql:
+    image: postgres
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: RufikRoot123321
+    container_name: postgresql
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/postgres_data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  koshel-webapi:
+    build:
+      context: .
+      dockerfile: koshel-webapi-dockerfile
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Release
+      - "ConnectionStrings__DefaultConnection=Host=${HOST};Port=5432;Database=koshel;Username=postgres;Password=RufikRoot123321;"
+    depends_on:
+      postgresql:
+        condition: service_healthy
+    ports:
+      - "5003:8080"
+
+  koshel-mvc:
+    build:
+      context: .
+      dockerfile: koshel-mvc-dockerfile
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Release
+      - "KoshelApi__Url=http://${HOST}:5003"
+    depends_on:
+      koshel-webapi:
+        condition: service_started
+    ports:
+      - "5053:8080"
+volumes:
+  postgres_data:

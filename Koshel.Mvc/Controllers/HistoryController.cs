@@ -1,4 +1,5 @@
 ﻿using Koshel.ApiClient;
+using Koshel.Mvc.KoshelApiService;
 using Koshel.Mvc.Models;
 using Microsoft.AspNetCore.Mvc;
 
@@ -6,16 +7,16 @@ namespace Koshel.Mvc.Controllers;
 
 public class HistoryController : Controller
 {
-    private readonly KoshelApiClient _apiClient;
+    private readonly IKoshelApiRepositry _apiClient;
 
-    public HistoryController()
+    public HistoryController(IKoshelApiRepositry apiClient)
     {
-        _apiClient = new KoshelApiClient();
+        _apiClient = apiClient;
     }
 
     public async Task<IActionResult> Index()
     {
-        var messages = await _apiClient.GetMessages();
+        var messages = await _apiClient.GetMessagesAsync();
 
         if (messages != null)
         {

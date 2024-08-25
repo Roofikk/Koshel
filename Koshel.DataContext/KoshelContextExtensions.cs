@@ -25,4 +25,12 @@ public static class KoshelContextExtensions
             });
         });
     }
+
+    public static async Task InitializeDatabaseAsync(this KoshelContext context)
+    {
+        if ((await context.Database.GetPendingMigrationsAsync()).Any())
+        {
+            await context.Database.MigrateAsync();
+        }
+    }
 }

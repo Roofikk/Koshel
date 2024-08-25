@@ -1,7 +1,10 @@
+using Koshel.Mvc.KoshelApiService;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
+builder.Services.AddScoped<IKoshelApiRepositry, KoshelApiRepositry>();
 builder.Services.AddSignalR();
 
 var app = builder.Build();
@@ -25,6 +28,5 @@ app.UseCors("AllowWebSocketConnection");
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=History}/{action=Index}/{id?}");
-
 
 app.Run();

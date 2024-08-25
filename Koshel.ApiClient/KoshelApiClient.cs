@@ -7,15 +7,15 @@ public class KoshelApiClient
 {
     private readonly HttpClient _httpClient;
 
-    public KoshelApiClient(string domain = "localhost:5003")
+    public KoshelApiClient(string domain = "http://localhost:5003")
     {
         _httpClient = new HttpClient()
         {
-            BaseAddress = new Uri($"http://{domain}/api/messages/")
+            BaseAddress = new Uri($"{domain}/api/messages/")
         };
     }
 
-    public async Task<IEnumerable<MessageDto>?> GetMessages(DateTimeOffset? beginDate = null, DateTimeOffset? endDate = null)
+    public async Task<IEnumerable<MessageDto>?> GetMessagesAsync(DateTimeOffset? beginDate = null, DateTimeOffset? endDate = null)
     {
         endDate ??= new DateTimeOffset(DateTime.Now);
         beginDate ??= endDate.Value.Subtract(TimeSpan.FromMinutes(10));
@@ -29,7 +29,7 @@ public class KoshelApiClient
         return await response.Content.ReadFromJsonAsync<IEnumerable<MessageDto>>();
     }
 
-    public async Task<MessageDto?> GetMessages(int messageId)
+    public async Task<MessageDto?> GetMessageAsync(int messageId)
     {
         var response = await _httpClient.GetAsync($"{messageId}");
 
@@ -41,7 +41,7 @@ public class KoshelApiClient
         return await response.Content.ReadFromJsonAsync<MessageDto>();
     }
 
-    public async Task<MessageDto?> SendMessage(string message)
+    public async Task<MessageDto?> SendMessageAsync(string message)
     {
         var response = await _httpClient.PostAsync("", new StringContent($"\"{message}\"", System.Text.Encoding.UTF8, "application/json"));
         

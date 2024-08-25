@@ -1,7 +1,6 @@
 using Koshel.DataContext;
 using Koshel.WebApi.Hubs;
 using Microsoft.AspNetCore.HttpOverrides;
-using Microsoft.Extensions.Options;
 using Serilog;
 using System.Reflection;
 
@@ -62,21 +61,24 @@ app.UseSerilogRequestLogging(opts =>
     };
 });
 
-app.UseForwardedHeaders(new ForwardedHeadersOptions
-{
-    ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto
-});
+//app.UseForwardedHeaders(new ForwardedHeadersOptions
+//{
+//    ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto
+//});
 
-if (app.Environment.IsDevelopment())
-{
-    app.UseSwagger();
-    app.UseSwaggerUI();
-}
+app.UseSwagger();
+app.UseSwaggerUI();
 
-app.UseAuthorization();
 app.MapControllers();
 
 app.UseCors("CorsPolicy");
 app.MapHub<MessageHub>("/messageHub");
+
+app.Lifetime.ApplicationStarted.Register(async () =>
+{
+    using var scope = app.Services.CreateAsyncScope();
+    var context = scope.ServiceProvider.GetRequiredService<KoshelContext>();
+    await context.InitializeDatabaseAsync();
+});
 
 app.Run();

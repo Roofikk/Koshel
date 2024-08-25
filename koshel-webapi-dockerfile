@@ -1,0 +1,23 @@
+FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS base
+USER app
+WORKDIR /app
+
+FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
+ARG BUILD_CONFIGURATION=Release
+WORKDIR /src
+COPY "Koshel.WebApi/Koshel.WebApi.csproj" "Koshel.WebApi/"
+COPY "Koshel.DataContext/Koshel.DataContext.csproj" "Koshel.DataContext/"
+RUN dotnet restore "Koshel.WebApi/Koshel.WebApi.csproj"
+
+COPY . .
+WORKDIR "/src/Koshel.WebApi"
+RUN dotnet build -c $BUILD_CONFIGURATION -o /app/build
+
+FROM build AS publish
+ARG BUILD_CONFIGURATION=Release
+RUN dotnet publish -c $BUILD_CONFIGURATION -o /app/publish /p:UseAppHost=false
+
+FROM base AS final
+WORKDIR /app
+COPY --from=publish /app/publish .
+ENTRYPOINT ["dotnet", "Koshel.WebApi.dll"]

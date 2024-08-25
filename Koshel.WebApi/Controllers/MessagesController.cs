@@ -3,10 +3,6 @@ using Koshel.WebApi.Hubs;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Npgsql;
-using Swashbuckle.AspNetCore.Annotations;
-using System.ComponentModel;
-using System.Globalization;
-using System.Text.RegularExpressions;
 
 namespace Koshel.WebApi.Controllers;
 
@@ -145,38 +141,5 @@ public class MessagesController : ControllerBase
             await _messageHub.SendMessage(createdMessage);
             return CreatedAtAction(nameof(Get), new { id = messageId }, createdMessage);
         }
-    }
-}
-
-class TimeSpanConverter : TypeConverter
-{
-    public override bool CanConvertFrom(ITypeDescriptorContext? context, Type sourceType)
-    {
-        return sourceType == typeof(string);
-    }
-
-    public override object? ConvertFrom(ITypeDescriptorContext? context, CultureInfo? culture, object value)
-    {
-        if (value is string s)
-        {
-            var regex = new Regex(@"^(?<hours>\d+):(?<minutes>\d+):(?<seconds>\d+)$");
-
-            if (regex.IsMatch(s))
-            {
-                var match = regex.Match(s);
-                var hours = int.Parse(match.Groups["hours"].Value);
-                var minutes = int.Parse(match.Groups["minutes"].Value);
-                var seconds = int.Parse(match.Groups["seconds"].Value);
-
-                if (hours > 23 || minutes > 59 || seconds > 59)
-                {
-                    return null;
-                }
-
-                return new TimeSpan(hours, minutes, seconds);
-            }
-        }
-
-        return base.ConvertFrom(context, culture, value);
     }
 }

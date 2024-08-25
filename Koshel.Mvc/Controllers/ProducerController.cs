@@ -1,16 +1,17 @@
 using Koshel.ApiClient;
+using Koshel.Mvc.KoshelApiService;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Koshel.Mvc.Controllers;
 
 public class ProducerController : Controller
 {
-    private readonly KoshelApiClient _apiClient;
+    private readonly IKoshelApiRepositry _apiClient;
     private readonly ILogger<ProducerController> _logger;
 
-    public ProducerController(ILogger<ProducerController> logger)
+    public ProducerController(IKoshelApiRepositry apiClient, ILogger<ProducerController> logger)
     {
-        _apiClient = new KoshelApiClient();
+        _apiClient = apiClient;
         _logger = logger;
     }
 
@@ -27,7 +28,7 @@ public class ProducerController : Controller
             return BadRequest(ModelState);
         }
 
-        var createdMessage = await _apiClient.SendMessage(message);
+        var createdMessage = await _apiClient.SendMessageAsync(message);
 
         if (createdMessage != null)
         {
