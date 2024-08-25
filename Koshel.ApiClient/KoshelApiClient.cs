@@ -15,14 +15,15 @@ public class KoshelApiClient
         };
     }
 
-    public async Task<IEnumerable<MessageDto>?> GetMessages(TimeSpan? time = null)
+    public async Task<IEnumerable<MessageDto>?> GetMessages(DateTimeOffset? beginDate = null, DateTimeOffset? endDate = null)
     {
-        time ??= TimeSpan.FromMinutes(10);
-        var response = await _httpClient.GetAsync($"?time={time:hh\\:mm\\:ss}");
+        endDate ??= new DateTimeOffset(DateTime.Now);
+        beginDate ??= endDate.Value.Subtract(TimeSpan.FromMinutes(10));
+        var response = await _httpClient.GetAsync($"?beginDate={beginDate:yyyy-MM-ddTHH:mm:ss}&endDate={endDate:yyyy-MM-ddTHH:mm:ss}");
 
         if (!response.IsSuccessStatusCode)
         {
-            return [];
+            return null;
         }
 
         return await response.Content.ReadFromJsonAsync<IEnumerable<MessageDto>>();
@@ -30,7 +31,7 @@ public class KoshelApiClient
 
     public async Task<MessageDto?> GetMessages(int messageId)
     {
-        var response = await _httpClient.GetAsync($"Get/{messageId}");
+        var response = await _httpClient.GetAsync($"{messageId}");
 
         if (!response.IsSuccessStatusCode)
         {

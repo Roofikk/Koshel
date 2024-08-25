@@ -10,10 +10,11 @@
     <div class="row">
         @foreach (var message in Model)
         {
-            <div class="d-flex gap-3">
-                <p>@message.MessageId</p>
-                <p>@message.Content</p>
-                <p>@message.SendDate.ToString("dd.MM.yyyy HH:mm")</p>
+            <div class="mt-3">
+                <div>Дата: @message.SendDate.ToString("dd.MM.yyyy HH:mm")</div>
+                <div>Номер: @message.MessageId</div>
+                <div>Сообщение: @message.Content</div>
+                <div class="border-bottom"></div>
             </div>
         }
     </div>

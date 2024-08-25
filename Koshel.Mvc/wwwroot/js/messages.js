@@ -1,6 +1,6 @@
 ﻿"use strict"
 
-var connection = new signalR.HubConnectionBuilder().withUrl("/messagesHub").build();
+var connection = new signalR.HubConnectionBuilder().withUrl("http://localhost:5003/messageHub").build();
 
 connection.on("ReceiveMessage", function (message) {
     // Вставка messageId, content и sendDate в список
@@ -13,4 +13,6 @@ connection.on("ReceiveMessage", function (message) {
 
 connection.start().then(function () {
     console.log("connect to web-socket!");
+}).catch(function () {
+    console.log('Faild to connect web socket');
 })

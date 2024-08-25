@@ -1,5 +1,4 @@
 using Koshel.ApiClient;
-using Koshel.Mvc.Hubs;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Koshel.Mvc.Controllers;
@@ -7,13 +6,11 @@ namespace Koshel.Mvc.Controllers;
 public class ProducerController : Controller
 {
     private readonly KoshelApiClient _apiClient;
-    private readonly MessagesHub _hub;
     private readonly ILogger<ProducerController> _logger;
 
-    public ProducerController(MessagesHub hub, ILogger<ProducerController> logger)
+    public ProducerController(ILogger<ProducerController> logger)
     {
         _apiClient = new KoshelApiClient();
-        _hub = hub;
         _logger = logger;
     }
 
@@ -27,17 +24,16 @@ public class ProducerController : Controller
     {
         if (!ModelState.IsValid)
         {
-            return View("Error");
+            return BadRequest(ModelState);
         }
 
         var createdMessage = await _apiClient.SendMessage(message);
 
         if (createdMessage != null)
         {
-            await _hub.SendMessage(createdMessage);
-            return View("Success");
+            return Ok();
         }
 
-        return View("Error");
+        return BadRequest("Message wasn't created");
     }
 }
